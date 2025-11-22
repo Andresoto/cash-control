@@ -1,15 +1,32 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
+import {
+  Auth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  authState,
+} from '@angular/fire/auth';
+import { map, Observable } from 'rxjs';
+import { User } from '../auth/models/user.model';
+import { doc, Firestore, setDoc } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
+  private readonly auth = inject(Auth);
+  private readonly firestore = inject(Firestore);
 
-  private auth = inject(Auth);
+  async createUser(username: string, email: string, password: string) {
+    const { user } = await createUserWithEmailAndPassword(this.auth, email, password);
+    const newUser = new User(user.uid, username, user.email || '');
 
-  createUser(username: string, email: string, password: string) {
-    return createUserWithEmailAndPassword(this.auth,email,password);
+    try {
+      await setDoc(doc(this.firestore, `${newUser.uid}/user`), {...newUser});
+    } catch (e) {
+      console.error('Error al añadir documento: ', e);
+    }
+
+    return user;
   }
 
   loginUser(email: string, password: string) {
@@ -18,6 +35,12 @@ export class AuthService {
 
   logoutUser() {
     return this.auth.signOut();
+  }
+
+  isAuthenticated(): Observable<boolean> {
+    return authState(this.auth).pipe(
+      map((user) => user != null)
+    );
   }
 
   getErrorMessage(errorCode: string): string {
