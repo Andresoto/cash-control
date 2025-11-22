@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "CashControl": {
+    "cash-control": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -64,10 +64,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "CashControl:build:production"
+              "buildTarget": "cash-control:build:production"
             },
             "development": {
-              "buildTarget": "CashControl:build:development"
+              "buildTarget": "cash-control:build:development"
             }
           },
           "defaultConfiguration": "development"
