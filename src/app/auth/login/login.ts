@@ -4,6 +4,14 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/authService';
 import Swal from 'sweetalert2';
 
+import { Store } from '@ngrx/store';
+import { AppState } from '../../app.reducer';
+import { ui } from '../../shared/ui.selector';
+import * as uiActions from '../../shared/ui.actions';
+
+import { toSignal } from '@angular/core/rxjs-interop';
+import { map } from 'rxjs';
+
 @Component({
   selector: 'app-login',
   imports: [RouterLink, ReactiveFormsModule],
@@ -14,6 +22,9 @@ export class Login implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly store = inject(Store<AppState>);
+
+  public isLoading = toSignal(this.store.select(ui).pipe(map(ui => ui.isLoading)));
 
   loginForm!: FormGroup;
 
@@ -29,23 +40,18 @@ export class Login implements OnInit {
       return;
     }
 
-    Swal.fire({
-      title: 'Cargando...',
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    this.store.dispatch(uiActions.isLoading());
 
     const { email, password } = this.loginForm.value;
 
     this.authService
       .loginUser(email, password)
       .then((userCredential) => {
-        console.log(userCredential);
-        Swal.close();
+        this.store.dispatch(uiActions.stopLoading());
         this.router.navigate(['/']);
       })
       .catch((error) => {
+        this.store.dispatch(uiActions.stopLoading());
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
