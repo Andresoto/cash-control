@@ -6,8 +6,11 @@ import {
   authState,
 } from '@angular/fire/auth';
 import { map, Observable } from 'rxjs';
-import { User } from '../auth/models/user.model';
-import { doc, Firestore, setDoc } from '@angular/fire/firestore';
+import { User, UsuarioDataFirebase } from '../models/user.model';
+import { doc, Firestore, setDoc, getDoc } from '@angular/fire/firestore';
+import { AppState } from '../app.reducer';
+import { Store } from '@ngrx/store';
+import { setUser, unSetUser } from '../auth/auth.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +18,24 @@ import { doc, Firestore, setDoc } from '@angular/fire/firestore';
 export class AuthService {
   private readonly auth = inject(Auth);
   private readonly firestore = inject(Firestore);
+  private readonly store = inject(Store<AppState>);
+
+  initAuthListener() {
+    this.auth.onAuthStateChanged((fbUser) => {
+      if (fbUser) {
+        getDoc(doc(this.firestore, `${fbUser.uid}/user`))
+        .then((docSnap) => {
+          console.log(docSnap.data());
+          if (docSnap.exists()) {
+            const user = User.fromFirebase(docSnap.data() as UsuarioDataFirebase);
+            this.store.dispatch(setUser({ user }));
+          }
+        });
+      } else {
+        this.store.dispatch(unSetUser());
+      }
+    });
+  }
 
   async createUser(username: string, email: string, password: string) {
     const { user } = await createUserWithEmailAndPassword(this.auth, email, password);
