@@ -15,12 +15,26 @@
           </thead>
 
           <tbody>
-            <tr>
-              <td>Descripción</td>
-              <td>Monto</td>
-              <td>Tipo</td>
-              <td>acciones</td>
-            </tr>
+            @for (item of incomingExit(); track item.uid) {
+              <tr>
+                <td>{{ item.description }}</td>
+                <td [ngClass]="{'text-danger': item.type === 'exit', 'text-success': item.type === 'income'}">
+                  {{ item.type === 'exit' ? '-' : '+' }} {{ item.amount | currency }}
+                </td>
+                <td [ngClass]="{'text-danger': item.type === 'exit', 'text-success': item.type === 'income'}">
+                  {{ item.type === 'income' ? 'Ingreso' : 'Egreso' }}
+                </td>
+                <td>
+                  <button (click)="deleteItem(item.uid!)" type="button" class="btn btn-danger btn-sm">
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="text-center">No hay registros</td>
+              </tr>
+            }
           </tbody>
         </table>
       </div>

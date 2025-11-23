@@ -11,6 +11,7 @@ import { doc, Firestore, setDoc, getDoc } from '@angular/fire/firestore';
 import { AppState } from '../app.reducer';
 import { Store } from '@ngrx/store';
 import { setUser, unSetUser } from '../auth/auth.actions';
+import { unSetItems } from '../incoming-exit/incoming-exit.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -19,20 +20,27 @@ export class AuthService {
   private readonly auth = inject(Auth);
   private readonly firestore = inject(Firestore);
   private readonly store = inject(Store<AppState>);
+  private _user!: User | null;
+
+  get user() {
+    return { ...this._user };
+  }
 
   initAuthListener() {
     this.auth.onAuthStateChanged((fbUser) => {
       if (fbUser) {
         getDoc(doc(this.firestore, `${fbUser.uid}/user`))
         .then((docSnap) => {
-          console.log(docSnap.data());
           if (docSnap.exists()) {
             const user = User.fromFirebase(docSnap.data() as UsuarioDataFirebase);
+            this._user = user;
             this.store.dispatch(setUser({ user }));
           }
         });
       } else {
+        this._user = null;
         this.store.dispatch(unSetUser());
+         this.store.dispatch(unSetItems());
       }
     });
   }
