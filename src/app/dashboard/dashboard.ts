@@ -27,9 +27,9 @@ export class Dashboard implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.userSubscription = this.store.select(userSelector)
     .pipe(
-      filter(({ user }) => user !== null)
+      filter(( user ) => user !== null)
     )
-    .subscribe(({ user }) => {
+    .subscribe(( user ) => {
       console.log(user);
       this.itemsSubscription = this.incomingExitService.initIncomeExitListener(user!.uid)
       .subscribe((items: any) => {

@@ -1,4 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { AppState } from '../../app.reducer';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { userNameSelector } from '../../auth/auth.selector';
 
 @Component({
   selector: 'app-navbar',
@@ -8,4 +12,7 @@ import { Component } from '@angular/core';
 })
 export class Navbar {
 
+  private readonly store = inject(Store<AppState>);
+
+  public userName = toSignal(this.store.select(userNameSelector));
 }

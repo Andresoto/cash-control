@@ -19,7 +19,7 @@ export class Details {
   private readonly store = inject(Store<AppState>);
   private readonly incomingExitService = inject(IncomingExitService);
 
-  public incomingExit = toSignal(this.store.select(incomingExitSelector).pipe(map(({items}) => items)), { initialValue: [] });
+  public incomingExit = toSignal(this.store.select(incomingExitSelector), { initialValue: [] });
   public incomingExitOrdered = computed(() => {
     return this.incomingExit().slice().sort( (a, b) => {
       if (a.type === 'income') {
