@@ -15,7 +15,7 @@
           </thead>
 
           <tbody>
-            @for (item of incomingExit(); track item.uid) {
+            @for (item of incomingExitOrdered(); track item.uid) {
               <tr>
                 <td>{{ item.description }}</td>
                 <td [ngClass]="{'text-danger': item.type === 'exit', 'text-success': item.type === 'income'}">

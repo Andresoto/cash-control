@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { doc, Firestore, setDoc, collection, collectionSnapshots  } from '@angular/fire/firestore';
+import { doc, Firestore, setDoc, collection, collectionSnapshots, deleteDoc } from '@angular/fire/firestore';
 import { IncomeExit, IncomeExitFirebase } from '../models/income-exit';
 import { AuthService } from './authService';
 import { Store } from '@ngrx/store';
@@ -37,5 +37,11 @@ export class IncomingExitService {
         });
       })
     )
+  }
+
+  deleteIncomeExit(uid: string) {
+    const userUid = this.userService.user?.uid;
+    const docRef = doc(this.firestore, `${userUid}/income-exit/items/${uid}`);
+    return deleteDoc(docRef);
   }
 }
