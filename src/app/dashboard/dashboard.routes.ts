@@ -1,9 +1,14 @@
 import { Routes } from '@angular/router';
+import { provideState } from '@ngrx/store';
+import { incomingExitReducer } from '../incoming-exit/incoming-exit.reducer';
 
 export const dashboardRoutes: Routes = [
   {
     path: '',
     loadComponent: () => import('./dashboard').then((m) => m.Dashboard),
+    providers: [
+      provideState('incomingExit', incomingExitReducer)
+    ],
     children: [
       {
         path: '',
