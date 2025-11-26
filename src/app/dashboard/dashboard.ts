@@ -30,10 +30,8 @@ export class Dashboard implements OnInit, OnDestroy {
       filter(( user ) => user !== null)
     )
     .subscribe(( user ) => {
-      console.log(user);
       this.itemsSubscription = this.incomingExitService.initIncomeExitListener(user!.uid)
-      .subscribe((items: any) => {
-        console.log(items);
+      .subscribe((items) => {
         this.store.dispatch(setItems({ items }));
       });
     });

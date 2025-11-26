@@ -31,7 +31,6 @@ export class IncomingExitService {
     return collectionSnapshots(collectionRef)
     .pipe(
       map( (snapshot) => {
-        console.log(snapshot);
         return snapshot.map((doc) => {
           return IncomeExit.fromFirebase({uid: doc.id, ...doc.data() } as IncomeExitFirebase);
         });
